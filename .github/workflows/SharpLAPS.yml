@@ -21,14 +21,6 @@ jobs:
           git submodule sync --recursive
           git submodule update --init --force --recursive
 
-      # Download and install nuget.exe
-      - name: Setup Nuget.exe
-        uses: nuget/setup-nuget@v1
-
-      # Use Nuget to install dependencies 
-      - name: Nuget Restore
-        run: nuget restore $Env:GITHUB_WORKSPACE\SharpLAPS\SharpLAPS.sln
-
       # Build with MSBuild
       - name: Build SharpLAPS
         run: |
