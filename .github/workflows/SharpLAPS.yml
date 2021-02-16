@@ -25,13 +25,15 @@ jobs:
       - name: Build SharpLAPS
         run: |
           cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
-          .\MSBuild.exe $Env:GITHUB_WORKSPACE\SharpLAPS\SharpLAPS\SharpLAPS.csproj /property:Configuration=Release
+          dir $Env:GITHUB_WORKSPACE
+          dir $Env:GITHUB_WORKSPACE\SharpLAPS
+          .\MSBuild.exe $Env:GITHUB_WORKSPACE\SharpLAPS\SharpLAPS.csproj /property:Configuration=Release
       
       # Upload Artifact to Github Action panel
       - uses: actions/upload-artifact@master
         with:
           name: SharpLAPS
-          path: SharpLAPS\SharpLAPS\bin\Release\SharpLAPS.exe
+          path: SharpLAPS\bin\Release\SharpLAPS.exe
 
       # Release
       - uses: "marvinpinto/action-automatic-releases@latest"
@@ -41,4 +43,4 @@ jobs:
           prerelease: true
           title: "Development Build"
           files: |
-            ./SharpLAPS/SharpLAPS/bin/Release/SharpLAPS.exe
+            ./SharpLAPS/bin/Release/SharpLAPS.exe
