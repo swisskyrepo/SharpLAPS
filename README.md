@@ -3,7 +3,7 @@
 > The attribute **ms-mcs-AdmPwd** stores the clear-text LAPS password. 
 
 This executable is made to be executed within Cobalt Strike session using `execute-assembly`.
-It will retrieve the **LAPS** password from the Active Directory.
+It will retrieve the **LAPS** password from the Active Directory.  
 
 Require (either):
 * Account with `ExtendedRight` or `Generic All Rights`
@@ -30,4 +30,6 @@ Optional
 Usage: SharpLAPS.exe /user:DOMAIN\User /pass:MyP@ssw0rd123! /host:192.168.1.1
 ```
 
-![]()
+## Screenshot
+
+![Screenshot](https://github.com/swisskyrepo/SharpLAPS/blob/main/Screenshot/screenshot.png?raw=true)

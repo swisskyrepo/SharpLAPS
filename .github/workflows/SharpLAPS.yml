@@ -1,0 +1,52 @@
+name: sharplaps
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE
+      - uses: actions/checkout@v2
+
+      # Checks-out submodules
+      - uses: actions/checkout@v2
+      - name: Checkout submodules
+        shell: bash
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --force --recursive
+
+      # Download and install nuget.exe
+      - name: Setup Nuget.exe
+        uses: nuget/setup-nuget@v1
+
+      # Use Nuget to install dependencies 
+      - name: Nuget Restore
+        run: nuget restore $Env:GITHUB_WORKSPACE\SharpLAPS\SharpLAPS.sln
+
+      # Build with MSBuild
+      - name: Build SharpLAPS
+        run: |
+          cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\"
+          .\MSBuild.exe $Env:GITHUB_WORKSPACE\SharpLAPS\SharpLAPS.csproj /property:Configuration=Release
+      
+      # Upload Artifact to Github Action panel
+      - uses: actions/upload-artifact@master
+        with:
+          name: SharpLAPS
+          path: SharpLAPS\bin\Release\SharpHound.exe
+
+      # Release
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest-SharpLAPS"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            ./SharpLAPS/bin/Release/SharpLAPS.exe
