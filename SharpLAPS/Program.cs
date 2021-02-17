@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.IO;
@@ -24,6 +24,7 @@ namespace SharpLAPS
             var parsed = ArgumentParser.Parse(args);
             String username = null;
             String password = null;
+            String target = "*";
             String connectionString = "LDAP://{0}:{1}";
             DirectoryEntry ldapConnection;
 
@@ -36,6 +37,7 @@ namespace SharpLAPS
                 Console.WriteLine("\nOptional");
                 Console.WriteLine("/user:<username> Username of the account");
                 Console.WriteLine("/pass:<password> Password of the account");
+                Console.WriteLine("/target:<target> computer name (if not set query all computers in AD)");
                 Console.WriteLine("/out:<file>      Outputting credentials to file");
                 Console.WriteLine("/ssl             Enable SSL (LDAPS://)");
 
@@ -52,10 +54,15 @@ namespace SharpLAPS
             {
                 connectionString = String.Format(connectionString, parsed.Arguments["/host"], "636");
             }
-
+            
+            // Filter computer name
+            if (parsed.Arguments.ContainsKey("/target"))
+            {
+                target = parsed.Arguments["/target"] + "$";
+            }
 
             // Use the provided credentials or the current session
-            if (parsed.Arguments.ContainsKey("/host") && parsed.Arguments.ContainsKey("/pass"))
+            if (parsed.Arguments.ContainsKey("/user") && parsed.Arguments.ContainsKey("/pass"))
             {
                 Console.WriteLine("\n[+] Using the following credentials");
                 Console.WriteLine("Host: " + connectionString);
@@ -76,7 +83,7 @@ namespace SharpLAPS
                 ldapConnection = new DirectoryEntry(connectionString, username, password, System.DirectoryServices.AuthenticationTypes.Secure);
                 Console.WriteLine("\n[+] Extracting LAPS password from LDAP");
                 DirectorySearcher searcher = new DirectorySearcher(ldapConnection);
-                searcher.Filter = "(&(objectCategory=computer)(ms-MCS-AdmPwd=*))";
+                searcher.Filter = "(&(objectCategory=computer)(ms-MCS-AdmPwd=*)(sAMAccountName=" + target + "))";
 
                 // Iterate over all the credentials
                 List<string> output = new List<string>();
